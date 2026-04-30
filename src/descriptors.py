@@ -114,7 +114,7 @@ class StatusDescriptor:
         """
         if not isinstance(value, str):
             raise ValidationError("Status должен быть строкой")
-        if value not in ["in_progress", "done", "cancelled", "paused", "new"]:
+        if value not in ["in_progress", "done", "cancelled", "paused", "new", "api_call", "queued"]:
             raise ValidationError(f"Статус {value} недопустим")
         setattr(obj, self.status, value)
 

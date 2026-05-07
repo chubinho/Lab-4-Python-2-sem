@@ -4,7 +4,7 @@ from pathlib import Path
 from typing import Optional
 
 import typer
-
+import sys
 from src.async_queue import AsyncTaskQueue
 from src.worker import TaskWorker
 from src.handlers.api_handler import ApiHandler
@@ -17,7 +17,15 @@ from src.sources.api_mock_source import APIMockSource
 from src.consumer import TaskConsumer
 from src.logger import set_logger
 
-logger = set_logger(logging.INFO)
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
+    handlers=[
+        logging.StreamHandler(sys.stdout)
+    ]
+)
+
+logger = logging.getLogger(__name__)
 
 app = typer.Typer(help="Асинхронная платформа обработки задач")
 
@@ -37,15 +45,10 @@ async def run_processor(tasks_to_load):
 
     typer.echo(f"Загружено в асинхронную очередь: {len(tasks_to_load)} задач")
 
-    worker_task = asyncio.create_task(worker.run())
+    await worker.start()
+    await worker.stop()
 
-    await queue.join()
-
-    worker_task.cancel()
-    try:
-        await worker_task
-    except asyncio.CancelledError:
-        typer.echo("Обработка всех задач завершена.")
+    typer.echo("Обработка всех задач завершена. Успешно")
 
 
 @app.command(help="Запуск обработки. Флаги: [-n count, --status, --priority]")

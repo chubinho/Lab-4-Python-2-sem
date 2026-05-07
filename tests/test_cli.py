@@ -19,7 +19,7 @@ class TestCLICommands:
         assert "generate" in result.stdout
         assert "api" in result.stdout
         assert "all" in result.stdout
-        assert "process" in result.stdout  # Добавили проверку твоей команды process
+        assert "process" in result.stdout
 
     def test_generate_default_count(self):
         """Генерация задач с параметрами по умолчанию"""
@@ -37,15 +37,12 @@ class TestCLICommands:
         """Проверка команды api — задачи из заглушки."""
         result = runner.invoke(app, ["api"])
         assert result.exit_code == 0
-        # В зависимости от того, сколько задач возвращает APIMockSource()
-        # Если возвращает 3, проверка пройдет успешно
         assert "3 задач" in result.stdout
 
     def test_file_with_valid_json(self, tmp_path):
         """Загрузка задач из JSON-файла"""
         test_file = tmp_path / "tasks.json"
 
-        # Передаем структуру, которую ожидает твой FileSource / Task дескрипторы
         data = [
             {"id": 1, "payload": {"description": "Test 1",
                                   "priority": 5, "status": "new"}},
